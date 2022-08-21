@@ -1,26 +1,47 @@
 #include "sga_manager.hpp"
+#include "reader.hpp"
 
 #include <fstream>
 #include <iostream>
+
 
 namespace sga {
 
 void SGAManager::OpenAssetFile(const std::string& asset_file_path) {
 
-    std::ifstream is(asset_file_path, std::ios::in | std::ios::binary);
+    asset_file_path_ = asset_file_path;
 
-    if (!is.is_open()) {
-        std::cout << "Failed to open file" << std::endl;
+    sga::Reader reader(asset_file_path);
+
+    if (!reader.IsOpen()) {
+        std::cout << "Failed to open file: " << asset_file_path << std::endl;
         return;
     }
 
-    size_t entry_count = 0;
+    header_ = std::make_unique<Header>();
+    header_->ReadHeader(reader);
 
-    is >> entry_count;
-
-    std::cout << "Found " << entry_count << " entries" << std::endl;
+}
 
 
+void SGAManager::ReadFile(const std::string& filename) {
+
+    Header::Entry entry;
+
+    auto success = header_->GetEntry(entry, filename);
+
+    if (!success) {
+        return;
+    }
+
+    Reader reader(asset_file_path_);
+
+    auto header_size = header_->GetHeaderSize();
+
+    reader.JumpToPosition(header_size + entry.offset);
+    auto data = reader.ReadString(entry.file_size);
+
+    std::cout << "Data: " << data << std::endl;
 }
 
 } // namespace sga

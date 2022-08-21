@@ -9,13 +9,6 @@ class Packer {
 public:
     static bool Pack(const std::string& input_folder, const std::string& output_file, const std::string& encryption_key);
 
-    struct HeaderEntry {
-        std::string path;
-        std::string packaged_path;
-        size_t file_size;
-        size_t offset;
-    };
-
 };
 
 } // namespace sga

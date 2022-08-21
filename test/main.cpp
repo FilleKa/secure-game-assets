@@ -6,5 +6,8 @@ int main(int arg, char** argv) {
 
     mng.OpenAssetFile("asd");
 
+    mng.ReadFile("Resources/a.txt");
+    mng.ReadFile("Resources/MoreResources/b.txt");
+
     return 0;
 }
