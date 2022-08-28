@@ -6,7 +6,8 @@
 namespace sga {
     enum class Status : uint8_t {
         kSuccess,
-        kBadFormat
+        kBadFormat,
+        kBadFile
     };
 }
 

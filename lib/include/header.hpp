@@ -1,18 +1,22 @@
 #ifndef SGA_HEADER_HPP_
 #define SGA_HEADER_HPP_
 
+#include "reader.hpp"
 #include "status.hpp"
+#include "writer.hpp"
 
+#include <filesystem>
 #include <map>
-#include <reader.hpp>
 #include <string>
 
 namespace sga {
 
 class Header {
   public:
+    Header() = default;
 
-    Status ReadHeader(sga::Reader& reader);
+    static Status WriteHeader(Header& header, const std::string &input_folder, sga::Writer& writer);
+    Status ReadHeader(sga::Reader &reader);
 
     static constexpr char FORMAT_SIGNATURE[] = "SGAF";
 
@@ -24,6 +28,8 @@ class Header {
     };
 
     bool GetEntry(Entry &entry, const std::string &filename);
+
+    const std::map<std::string, Entry>& GetEntries() const;
 
     size_t GetHeaderSize() const;
 
