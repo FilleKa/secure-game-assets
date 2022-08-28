@@ -97,27 +97,27 @@ Status Header::ReadHeader(sga::Reader &reader) {
     }
 
     reader.PrepareSize(sizeof(uint64_t));
-    size_t entry_count = reader.Read<uint64_t>();
+    uint64_t entry_count = reader.Read<uint64_t>();
 
     reader.PrepareSize(sizeof(uint64_t));
-    size_t header_size = reader.Read<uint64_t>();
+    uint64_t header_size = reader.Read<uint64_t>();
 
     std::cout << "Found " << entry_count << " entries. " << header_size
               << " bytes of data." << std::endl;
 
     reader.PrepareSize(header_size);
 
-    for (int i = 0; i < entry_count; i++) {
+    for (uint64_t i = 0; i < entry_count; i++) {
 
-        size_t filename_len = reader.Read<uint64_t>();
+        uint64_t filename_len = reader.Read<uint64_t>();
         std::cout << "len:" << filename_len << std::endl;
 
         auto filepath = reader.ReadString(filename_len);
         std::cout << filepath << std::endl;
 
-        size_t filesize = reader.Read<uint64_t>();
+        uint64_t filesize = reader.Read<uint64_t>();
         std::cout << filesize << std::endl;
-        size_t offset = reader.Read<uint64_t>();
+        uint64_t offset = reader.Read<uint64_t>();
         std::cout << offset << std::endl;
 
         Entry entry;

@@ -6,6 +6,16 @@
 
 namespace sga {
 
+Writer::Writer(const std::string &encryption_key) {
+
+    if (encryption_key != "") {
+        padded_key_.resize(encryption_key.length());
+        std::memcpy(padded_key_.data(), encryption_key.data(),
+                    encryption_key.length());
+        Crypto::PadData(padded_key_, 32);
+    }
+}
+
 Writer::Writer(const std::string &filename, const std::string &encryption_key) {
     output_file_stream_.open(filename, std::ios::binary | std::ios::out);
 
@@ -37,15 +47,24 @@ void Writer::FlushEncryped() {
     AES_init_ctx_iv(&ctx, padded_key_.data(), nounce_.data());
     AES_CBC_encrypt_buffer(&ctx, pending_encrypt_.data(),
                            pending_encrypt_.size());
-    output_file_stream_.write((char *)pending_encrypt_.data(),
-                              pending_encrypt_.size());
-    pending_encrypt_.clear();
+
+    Flush();
 }
 
 void Writer::Flush() {
-    output_file_stream_.write((const char *)pending_encrypt_.data(),
-                              pending_encrypt_.size());
+
+    if (output_file_stream_.is_open()) {
+        output_file_stream_.write((const char *)pending_encrypt_.data(),
+                                  pending_encrypt_.size());
+    } else {
+        std::copy(pending_encrypt_.begin(), pending_encrypt_.end(), std::back_inserter(buffer_));
+    }
+
     pending_encrypt_.clear();
+}
+
+std::vector<uint8_t> Writer::GetBuffer() const {
+    return buffer_;
 }
 
 size_t Writer::GetPosition() { return output_file_stream_.tellp(); }
@@ -63,7 +82,7 @@ bool Writer::WriteFile(const std::string &path, uint64_t filesize) {
 
     auto len = pending_encrypt_.size();
     pending_encrypt_.resize(len + filesize);
-    in_file.read((char*) pending_encrypt_.data() + len, filesize);
+    in_file.read((char *)pending_encrypt_.data() + len, filesize);
     return true;
 }
 

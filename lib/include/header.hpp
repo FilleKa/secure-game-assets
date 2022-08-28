@@ -23,8 +23,8 @@ class Header {
     struct Entry {
         std::string path;
         std::string packaged_path;
-        size_t file_size;
-        size_t offset;
+        uint64_t file_size;
+        uint64_t offset;
     };
 
     bool GetEntry(Entry &entry, const std::string &filename);

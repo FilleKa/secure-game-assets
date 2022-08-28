@@ -13,12 +13,15 @@ namespace sga {
 
 class Writer {
   public:
-    Writer(const std::string &filename, const std::string &encryption_key);
+    Writer(const std::string &encryption_key);
+    Writer(const std::string& filename, const std::string &encryption_key);
     bool IsOpen() const;
     bool IsUsingEncryption() const;
 
     void FlushEncryped();
     void Flush();
+
+    std::vector<uint8_t> GetBuffer() const;
 
     template <typename T> void Write(const T &input) {
         auto len = pending_encrypt_.size();
@@ -38,6 +41,7 @@ class Writer {
     std::ofstream output_file_stream_;
     std::vector<uint8_t> pending_encrypt_;
     std::vector<uint8_t> padded_key_;
+    std::vector<uint8_t> buffer_;
     std::array<uint8_t, 16> nounce_;
 };
 
