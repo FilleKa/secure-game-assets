@@ -15,10 +15,7 @@ void SGAManager::OpenAssetFile(const std::string& asset_file_path) {
 
     sga::Reader reader(asset_file_path, "asd");
 
-    if (!reader.IsOpen()) {
-        std::cout << "Failed to open file: " << asset_file_path << std::endl;
-        return;
-    }
+    // check status
 
     header_ = std::make_unique<Header>();
     header_->ReadHeader(reader);
@@ -43,7 +40,9 @@ void SGAManager::ReadFile(const std::string& filename) {
     auto offset = entry.offset;
     reader.JumpToPosition(header_size + offset);
     reader.PrepareSize(entry.file_size);
-    auto data = reader.ReadString(entry.file_size);
+
+    std::string data;
+    reader.ReadString(data, entry.file_size);
 
     std::cout << "Data: " << data << std::endl;
 }

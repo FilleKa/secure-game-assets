@@ -71,7 +71,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
     writer.Write<uint64_t>(header_size);
     writer.FlushEncryped();
 
-    for (const auto& e : entries) {
+    for (const auto &e : entries) {
         writer.Write<uint64_t>(e.packaged_path.size());
         writer.WriteString(e.packaged_path);
         writer.Write<uint64_t>(e.file_size);
@@ -80,7 +80,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
 
     writer.FlushEncryped();
 
-    for (const auto& e : entries) {
+    for (const auto &e : entries) {
         header.entries_.emplace(e.path, e);
     }
 
@@ -90,17 +90,33 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
 Status Header::ReadHeader(sga::Reader &reader) {
 
     reader.PrepareSize(4);
-    auto signature = reader.ReadString(4);
+
+    std::string signature;
+    auto status = reader.ReadString(signature, 4);
+
+    if (status != Status::kSuccess) {
+        return status;
+    }
 
     if (signature != FORMAT_SIGNATURE) {
         return Status::kBadFormat;
     }
 
     reader.PrepareSize(sizeof(uint64_t));
-    uint64_t entry_count = reader.Read<uint64_t>();
+    uint64_t entry_count;
+    status = reader.Read(entry_count);
+
+    if (status != Status::kSuccess) {
+        return status;
+    }
 
     reader.PrepareSize(sizeof(uint64_t));
-    uint64_t header_size = reader.Read<uint64_t>();
+    uint64_t header_size;
+    status = reader.Read(header_size);
+
+    if (status != Status::kSuccess) {
+        return status;
+    }
 
     std::cout << "Found " << entry_count << " entries. " << header_size
               << " bytes of data." << std::endl;
@@ -109,15 +125,39 @@ Status Header::ReadHeader(sga::Reader &reader) {
 
     for (uint64_t i = 0; i < entry_count; i++) {
 
-        uint64_t filename_len = reader.Read<uint64_t>();
+        uint64_t filename_len;
+        status = reader.Read(filename_len);
+
+        if (status != Status::kSuccess) {
+            return status;
+        }
+
         std::cout << "len:" << filename_len << std::endl;
 
-        auto filepath = reader.ReadString(filename_len);
+        std::string filepath;
+        status = reader.ReadString(filepath, filename_len);
+
+        if (status != Status::kSuccess) {
+            return status;
+        }
+
         std::cout << filepath << std::endl;
 
-        uint64_t filesize = reader.Read<uint64_t>();
+        uint64_t filesize;
+        status = reader.Read(filesize);
+
+        if (status != Status::kSuccess) {
+            return status;
+        }
+
         std::cout << filesize << std::endl;
-        uint64_t offset = reader.Read<uint64_t>();
+        uint64_t offset;
+        status = reader.Read(offset);
+
+        if (status != Status::kSuccess) {
+            return status;
+        }
+        
         std::cout << offset << std::endl;
 
         Entry entry;
@@ -143,7 +183,7 @@ bool Header::GetEntry(Entry &entry, const std::string &filename) {
     return true;
 }
 
-const std::map<std::string, Header::Entry>& Header::GetEntries() const {
+const std::map<std::string, Header::Entry> &Header::GetEntries() const {
     return entries_;
 }
 

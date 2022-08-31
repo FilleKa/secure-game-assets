@@ -3,11 +3,11 @@
 #include "crypto.hpp"
 
 namespace sga {
-Reader::Reader(const std::string &asset_file_path,
-               const std::string &encryption_key) {
-    input_file_stream_.open(asset_file_path, std::ios::binary | std::ios::in);
 
-    if (encryption_key != "") {
+Reader::Reader(std::vector<uint8_t> data, const std::string &encryption_key)
+    : data_buffer_(data) {
+
+    if (!encryption_key.empty()) {
         padded_key_.resize(encryption_key.length());
         std::memcpy(padded_key_.data(), encryption_key.data(),
                     encryption_key.length());
@@ -19,25 +19,50 @@ Reader::Reader(const std::string &asset_file_path,
     }
 }
 
-void Reader::PrepareSize(int size) {
+Reader::Reader(const std::string &asset_file_path,
+               const std::string &encryption_key) {
+    input_file_stream_.open(asset_file_path, std::ios::binary | std::ios::in);
+
+    if (!encryption_key.empty()) {
+        padded_key_.resize(encryption_key.length());
+        std::memcpy(padded_key_.data(), encryption_key.data(),
+                    encryption_key.length());
+        Crypto::PadData(padded_key_, 32);
+    }
+
+    for (int i = 0; i < 16; i++) {
+        nounce_[i] = 0;
+    }
+}
+
+Status Reader::PrepareSize(int size) {
 
     if (!IsUsingEncryption()) {
-        return;
+        return Status::kSuccess;
     }
 
     auto sz = Crypto::GetPaddedSize(size, 32);
     decrypted_data_.resize(sz);
     decrypted_data_cursor_ = 0;
-    input_file_stream_.read((char *)decrypted_data_.data(), sz);
+
+    if (input_file_stream_.is_open()) {
+        input_file_stream_.read((char *)decrypted_data_.data(), sz);
+    } else {
+        if (static_cast<size_t>(data_buffer_cursor_ + sz) > data_buffer_.size()) {
+            return Status::kBadOperation;
+        }
+
+        std::memcpy(decrypted_data_.data(), data_buffer_.data() + data_buffer_cursor_, sz);
+    }
 
     AES_ctx ctx;
     AES_init_ctx_iv(&ctx, padded_key_.data(), nounce_.data());
     AES_CBC_decrypt_buffer(&ctx, decrypted_data_.data(), sz);
+    
+    return Status::kSuccess;
 }
 
 bool Reader::IsUsingEncryption() const { return !padded_key_.empty(); }
-
-bool Reader::IsOpen() const { return input_file_stream_.is_open(); }
 
 size_t Reader::GetPosition() { return input_file_stream_.tellg(); }
 
@@ -45,18 +70,29 @@ void Reader::JumpToPosition(size_t position) {
     input_file_stream_.seekg(position);
 }
 
-std::string Reader::ReadString(size_t len) {
-    std::string result;
+Status Reader::ReadString(std::string &result, size_t len) {
     result.resize(len);
 
     if (IsUsingEncryption()) {
-        std::memcpy((char*) result.data(), decrypted_data_.data() + decrypted_data_cursor_, len);
+        std::memcpy((char *)result.data(),
+                    decrypted_data_.data() + decrypted_data_cursor_, len);
         decrypted_data_cursor_ += len;
-        return result;
+        return Status::kSuccess;
     }
 
-    input_file_stream_.read((char *)result.data(), len);
-    return result;
+    if (input_file_stream_.is_open()) {
+        input_file_stream_.read((char *)result.data(), len);
+    } else {
+        if (data_buffer_cursor_ + len > data_buffer_.size()) {
+            return Status::kBadOperation;
+        }
+
+        std::memcpy(result.data(), data_buffer_.data() + data_buffer_cursor_,
+                    len);
+        data_buffer_cursor_ += len;
+    }
+
+    return Status::kSuccess;
 }
 
 } // namespace sga

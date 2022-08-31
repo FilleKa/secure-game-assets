@@ -31,14 +31,11 @@ Writer::Writer(const std::string &filename, const std::string &encryption_key) {
     }
 }
 
-bool Writer::IsOpen() const { return output_file_stream_.is_open(); }
-
 bool Writer::IsUsingEncryption() const { return !padded_key_.empty(); }
 
-void Writer::FlushEncryped() {
+Status Writer::FlushEncryped() {
     if (!IsUsingEncryption()) {
-        Flush();
-        return;
+        return Status::kBadOperation;
     }
 
     Crypto::PadData(pending_encrypt_, 32);
@@ -48,10 +45,14 @@ void Writer::FlushEncryped() {
     AES_CBC_encrypt_buffer(&ctx, pending_encrypt_.data(),
                            pending_encrypt_.size());
 
-    Flush();
+    return Flush();
 }
 
-void Writer::Flush() {
+Status Writer::Flush() {
+
+    if (pending_encrypt_.empty()) {
+        return Status::kBadOperation;
+    }
 
     if (output_file_stream_.is_open()) {
         output_file_stream_.write((const char *)pending_encrypt_.data(),
@@ -61,6 +62,7 @@ void Writer::Flush() {
     }
 
     pending_encrypt_.clear();
+    return Status::kSuccess;
 }
 
 std::vector<uint8_t> Writer::GetBuffer() const {

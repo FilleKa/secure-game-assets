@@ -18,6 +18,52 @@ bool CompareArrays(const std::vector<uint8_t> &lhs,
     return std::memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
 }
 
+TEST(Writer, ShouldReturnSuccessOnFlush) {
+    // Setup
+    sga::Writer writer("secret_key");
+
+    // Execute
+    writer.WriteString("Testing");
+    auto result = writer.Flush();
+
+    // Verify
+    ASSERT_EQ(result, sga::Status::kSuccess);
+}
+
+TEST(Writer, ShouldReturnSuccessOnFlushEncrypted) {
+    // Setup
+    sga::Writer writer("secret_key");
+
+    // Execute
+    writer.WriteString("Testing");
+    auto result = writer.FlushEncryped();
+
+    // Verify
+    ASSERT_EQ(result, sga::Status::kSuccess);
+}
+
+TEST(Writer, ShouldReturnBadOperationOnFlushWithNoData) {
+    // Setup
+    sga::Writer writer("secret_key");
+
+    // Execute
+    auto result = writer.Flush();
+
+    // Verify
+    ASSERT_EQ(result, sga::Status::kBadOperation);
+}
+
+TEST(Writer, ShouldReturnBadOperationOnFlushEncryptedWithNoKey) {
+    // Setup
+    sga::Writer writer("");
+
+    // Execute
+    auto result = writer.FlushEncryped();
+
+    // Verify
+    ASSERT_EQ(result, sga::Status::kBadOperation);
+}
+
 TEST(Writer, ShouldProperlyWriteString) {
     // Setup
     sga::Writer writer("secret_key");
@@ -67,4 +113,26 @@ TEST(Writer, ShouldHaveEmptyBufferIfNotFlushed) {
 
     // Verify
     ASSERT_TRUE(writer.GetBuffer().empty());
+}
+
+TEST(Writer, ShouldUseEncryptionIfKeyProvided) {
+    // Setup
+    sga::Writer writer("secret_key");
+
+    // Execute
+    bool encrypted = writer.IsUsingEncryption();
+
+    // Verify
+    ASSERT_TRUE(encrypted);
+}
+
+TEST(Writer, ShouldNotUseEncryptionIfKeyNotProvided) {
+    // Setup
+    sga::Writer writer("");
+
+    // Execute
+    bool encrypted = writer.IsUsingEncryption();
+
+    // Verify
+    ASSERT_FALSE(encrypted);
 }

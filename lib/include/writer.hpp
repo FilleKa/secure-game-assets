@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "crypto.hpp"
+#include "status.hpp"
 
 namespace sga {
 
@@ -15,11 +16,11 @@ class Writer {
   public:
     Writer(const std::string &encryption_key);
     Writer(const std::string& filename, const std::string &encryption_key);
-    bool IsOpen() const;
+
     bool IsUsingEncryption() const;
 
-    void FlushEncryped();
-    void Flush();
+    Status FlushEncryped();
+    Status Flush();
 
     std::vector<uint8_t> GetBuffer() const;
 
@@ -34,8 +35,6 @@ class Writer {
     void WriteString(const std::string &str);
 
     bool WriteFile(const std::string &path, uint64_t filesize);
-
-    void InitializeNounce();
 
   private:
     std::ofstream output_file_stream_;
