@@ -10,11 +10,6 @@ FileBase::FileBase(const std::string &encryption_key) {
                     encryption_key.length());
         Crypto::PadData(padded_key_, 32);
     }
-
-    // todo(fk): fix IV
-    for (int i = 0; i < 16; i++) {
-        iv_[i] = 0;
-    }
 }
 
 bool FileBase::IsUsingEncryption() const { return !padded_key_.empty(); }
@@ -23,8 +18,17 @@ const std::vector<uint8_t> &FileBase::GetPaddedKey() const {
     return padded_key_;
 }
 
-const std::array<uint8_t, 16> &FileBase::GetInitializationVector() const {
-    return iv_;
+std::array<uint8_t, 16> FileBase::GetInitializationVector(uint64_t message_index) const {
+    
+    std::array<uint8_t, 16> iv;
+    
+    std::memcpy(iv.data(), InitializationVector, 8);
+    
+    Crypto::MakeLittleEndian(message_index);
+
+    memcpy(iv.data() + 8, &message_index, 8);
+
+    return iv;
 }
 
 } // namespace sga

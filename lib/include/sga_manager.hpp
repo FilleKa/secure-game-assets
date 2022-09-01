@@ -2,23 +2,24 @@
 #define SGA_MANAGER_HPP_
 
 #include "header.hpp"
+#include "status.hpp"
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace sga {
 
 class SGAManager {
-public:
+  public:
+    Status OpenAssetFile(const std::string &asset_file_path,
+                       const std::string &encryption_key);
 
-    void OpenAssetFile(const std::string& asset_file_path);
+    void ReadFile(const std::string &filename);
 
-    void ReadFile(const std::string& filename);
-
-private:
-
+  private:
     std::unique_ptr<Header> header_;
     std::string asset_file_path_;
+    std::string encryption_key_;
 };
 
 } // namespace sga

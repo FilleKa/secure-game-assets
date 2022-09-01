@@ -25,6 +25,7 @@ class Header {
         std::string packaged_path;
         uint64_t file_size;
         uint64_t offset;
+        uint64_t index;
     };
 
     bool GetEntry(Entry &entry, const std::string &filename);

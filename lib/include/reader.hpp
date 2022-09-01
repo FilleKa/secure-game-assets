@@ -19,7 +19,9 @@ class Reader : public FileBase {
 
     Reader(std::vector<uint8_t> data, const std::string &encryption_key);
 
-    Status PrepareSize(int size);
+    bool IsFileOpen() const;
+
+    Status PrepareSize(int sizeu, uint64_t message_index);
 
     template <typename T> Status Read(T &result) {
         auto len = sizeof(T);

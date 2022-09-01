@@ -22,7 +22,7 @@ Status Writer::FlushEncryped() {
 
     AES_ctx ctx;
     AES_init_ctx_iv(&ctx, GetPaddedKey().data(),
-                    GetInitializationVector().data());
+                    GetInitializationVector(flushed_message_count_++).data());
     AES_CBC_encrypt_buffer(&ctx, pending_encrypt_.data(),
                            pending_encrypt_.size());
 

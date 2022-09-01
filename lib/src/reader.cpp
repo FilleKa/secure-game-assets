@@ -13,7 +13,11 @@ Reader::Reader(const std::string &asset_file_path,
     input_file_stream_.open(asset_file_path, std::ios::binary | std::ios::in);
 }
 
-Status Reader::PrepareSize(int size) {
+bool Reader::IsFileOpen() const {
+    return input_file_stream_.is_open();
+}
+
+Status Reader::PrepareSize(int size, uint64_t message_index) {
 
     if (!IsUsingEncryption()) {
         return Status::kSuccess;
@@ -36,7 +40,7 @@ Status Reader::PrepareSize(int size) {
     }
 
     AES_ctx ctx;
-    AES_init_ctx_iv(&ctx, GetPaddedKey().data(), GetInitializationVector().data());
+    AES_init_ctx_iv(&ctx, GetPaddedKey().data(), GetInitializationVector(message_index).data());
     AES_CBC_decrypt_buffer(&ctx, decrypted_data_.data(), sz);
 
     return Status::kSuccess;

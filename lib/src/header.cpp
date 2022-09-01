@@ -89,10 +89,11 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
 
 Status Header::ReadHeader(sga::Reader &reader) {
 
-    reader.PrepareSize(4);
+    uint64_t message_count = 0;
+    auto status = reader.PrepareSize(4, message_count++);
 
     std::string signature;
-    auto status = reader.ReadString(signature, 4);
+    status = reader.ReadString(signature, 4);
 
     if (status != Status::kSuccess) {
         return status;
@@ -102,7 +103,7 @@ Status Header::ReadHeader(sga::Reader &reader) {
         return Status::kBadFormat;
     }
 
-    reader.PrepareSize(sizeof(uint64_t));
+    reader.PrepareSize(sizeof(uint64_t), message_count++);
     uint64_t entry_count;
     status = reader.Read(entry_count);
 
@@ -110,7 +111,7 @@ Status Header::ReadHeader(sga::Reader &reader) {
         return status;
     }
 
-    reader.PrepareSize(sizeof(uint64_t));
+    reader.PrepareSize(sizeof(uint64_t), message_count++);
     uint64_t header_size;
     status = reader.Read(header_size);
 
@@ -121,7 +122,7 @@ Status Header::ReadHeader(sga::Reader &reader) {
     std::cout << "Found " << entry_count << " entries. " << header_size
               << " bytes of data." << std::endl;
 
-    reader.PrepareSize(header_size);
+    reader.PrepareSize(header_size, message_count++);
 
     for (uint64_t i = 0; i < entry_count; i++) {
 
@@ -165,6 +166,7 @@ Status Header::ReadHeader(sga::Reader &reader) {
         entry.packaged_path = filepath;
         entry.offset = offset;
         entry.file_size = filesize;
+        entry.index = i;
         entries_.emplace(filepath, std::move(entry));
     }
 
