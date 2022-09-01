@@ -1,5 +1,6 @@
 
 add_library(sga 
+    src/file_base.cpp
     src/header.cpp
     src/log.cpp
     src/reader.cpp

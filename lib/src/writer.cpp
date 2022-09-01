@@ -6,32 +6,12 @@
 
 namespace sga {
 
-Writer::Writer(const std::string &encryption_key) {
+Writer::Writer(const std::string &encryption_key) : FileBase(encryption_key) {}
 
-    if (encryption_key != "") {
-        padded_key_.resize(encryption_key.length());
-        std::memcpy(padded_key_.data(), encryption_key.data(),
-                    encryption_key.length());
-        Crypto::PadData(padded_key_, 32);
-    }
-}
-
-Writer::Writer(const std::string &filename, const std::string &encryption_key) {
+Writer::Writer(const std::string &filename, const std::string &encryption_key)
+    : FileBase(encryption_key) {
     output_file_stream_.open(filename, std::ios::binary | std::ios::out);
-
-    if (encryption_key != "") {
-        padded_key_.resize(encryption_key.length());
-        std::memcpy(padded_key_.data(), encryption_key.data(),
-                    encryption_key.length());
-        Crypto::PadData(padded_key_, 32);
-    }
-
-    for (int i = 0; i < 16; i++) {
-        nounce_[i] = 0;
-    }
 }
-
-bool Writer::IsUsingEncryption() const { return !padded_key_.empty(); }
 
 Status Writer::FlushEncryped() {
     if (!IsUsingEncryption()) {
@@ -41,7 +21,8 @@ Status Writer::FlushEncryped() {
     Crypto::PadData(pending_encrypt_, 32);
 
     AES_ctx ctx;
-    AES_init_ctx_iv(&ctx, padded_key_.data(), nounce_.data());
+    AES_init_ctx_iv(&ctx, GetPaddedKey().data(),
+                    GetInitializationVector().data());
     AES_CBC_encrypt_buffer(&ctx, pending_encrypt_.data(),
                            pending_encrypt_.size());
 
@@ -49,7 +30,6 @@ Status Writer::FlushEncryped() {
 }
 
 Status Writer::Flush() {
-
     if (pending_encrypt_.empty()) {
         return Status::kBadOperation;
     }
@@ -58,16 +38,15 @@ Status Writer::Flush() {
         output_file_stream_.write((const char *)pending_encrypt_.data(),
                                   pending_encrypt_.size());
     } else {
-        std::copy(pending_encrypt_.begin(), pending_encrypt_.end(), std::back_inserter(buffer_));
+        std::copy(pending_encrypt_.begin(), pending_encrypt_.end(),
+                  std::back_inserter(buffer_));
     }
 
     pending_encrypt_.clear();
     return Status::kSuccess;
 }
 
-std::vector<uint8_t> Writer::GetBuffer() const {
-    return buffer_;
-}
+std::vector<uint8_t> Writer::GetBuffer() const { return buffer_; }
 
 size_t Writer::GetPosition() { return output_file_stream_.tellp(); }
 

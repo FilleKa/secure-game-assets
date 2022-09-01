@@ -8,10 +8,11 @@
 #include <vector>
 
 #include "status.hpp"
+#include "file_base.hpp"
 
 namespace sga {
 
-class Reader {
+class Reader : public FileBase {
   public:
     Reader(const std::string &asset_file_path,
            const std::string &encryption_key);
@@ -19,8 +20,6 @@ class Reader {
     Reader(std::vector<uint8_t> data, const std::string &encryption_key);
 
     Status PrepareSize(int size);
-
-    bool IsUsingEncryption() const;
 
     template <typename T> Status Read(T &result) {
         auto len = sizeof(T);
@@ -61,9 +60,6 @@ class Reader {
 
     std::vector<uint8_t> data_buffer_;
     int data_buffer_cursor_ = 0;
-
-    std::vector<uint8_t> padded_key_;
-    std::array<uint8_t, 16> nounce_;
 };
 
 } // namespace sga

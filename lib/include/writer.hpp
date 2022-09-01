@@ -9,15 +9,14 @@
 
 #include "crypto.hpp"
 #include "status.hpp"
+#include "file_base.hpp"
 
 namespace sga {
 
-class Writer {
+class Writer : public FileBase {
   public:
     Writer(const std::string &encryption_key);
     Writer(const std::string& filename, const std::string &encryption_key);
-
-    bool IsUsingEncryption() const;
 
     Status FlushEncryped();
     Status Flush();
@@ -39,9 +38,7 @@ class Writer {
   private:
     std::ofstream output_file_stream_;
     std::vector<uint8_t> pending_encrypt_;
-    std::vector<uint8_t> padded_key_;
     std::vector<uint8_t> buffer_;
-    std::array<uint8_t, 16> nounce_;
 };
 
 } // namespace sga
