@@ -19,8 +19,12 @@ FileBase::FileBase(const std::string &encryption_key) {
 
 bool FileBase::IsUsingEncryption() const { return !padded_key_.empty(); }
 
-    const std::vector<uint8_t> & FileBase::GetPaddedKey() const { return padded_key_; }
-    const std::array<uint8_t, 16> &FileBase::GetInitializationVector() const { return iv_; }
+const std::vector<uint8_t> &FileBase::GetPaddedKey() const {
+    return padded_key_;
+}
 
+const std::array<uint8_t, 16> &FileBase::GetInitializationVector() const {
+    return iv_;
+}
 
 } // namespace sga
