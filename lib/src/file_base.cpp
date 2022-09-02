@@ -1,5 +1,7 @@
 #include "file_base.hpp"
 #include "crypto.hpp"
+#include "endianness.hpp"
+
 #include <cstring>
 
 namespace sga {
@@ -24,7 +26,7 @@ std::array<uint8_t, 16> FileBase::GetInitializationVector(uint64_t message_index
     
     std::memcpy(iv.data(), InitializationVector, 8);
     
-    Crypto::MakeLittleEndian(message_index);
+    endian::ConvertToEndianness(message_index, endian::Endianness::kLittle);
 
     memcpy(iv.data() + 8, &message_index, 8);
 

@@ -6,6 +6,7 @@ add_library(sga
     src/reader.cpp
     src/sga_manager.cpp 
     src/writer.cpp
+    src/endianness.cpp
 )
 
 add_subdirectory(external/tiny-aes-c)

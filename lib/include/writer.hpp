@@ -10,6 +10,7 @@
 #include "crypto.hpp"
 #include "file_base.hpp"
 #include "status.hpp"
+#include "endianness.hpp"
 
 namespace sga {
 
@@ -26,7 +27,7 @@ class Writer : public FileBase {
     template <typename T> void Write(const T &input) {
 
         auto data = input;
-        Crypto::MakeLittleEndian(data);
+        endian::ConvertToEndianness(data, endian::Endianness::kLittle);
 
         auto len = pending_encrypt_.size();
         pending_encrypt_.resize(len + sizeof(T));
