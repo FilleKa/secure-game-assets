@@ -2,6 +2,7 @@ enable_testing()
 
 add_executable(sga-test
     test_main.cpp
+    endianness_tests.cpp
     header_tests.cpp
     reader_tests.cpp
     writer_tests.cpp

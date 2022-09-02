@@ -2,8 +2,8 @@
 #define SGA_ENDIANNESS_HPP_
 
 #include <cstdint>
-#include <stdio.h>
 #include <stddef.h>
+#include <stdio.h>
 
 namespace sga {
 namespace endian {
@@ -24,7 +24,7 @@ template <typename T> void ConvertToEndianness(T &t, Endianness endianness) {
     auto temp = t;
     auto sz = sizeof(T);
     for (size_t i = 0; i < sz; i++) {
-        memcpy(&t + i, &temp + (sz - 1 - i), 1);
+        ((char *)&t)[i] = ((char *)&temp)[sz - (1 + i)];
     }
 }
 

@@ -65,7 +65,7 @@ TEST(Reader, ShouldReturnBadOperationOnPreparingEmptyEncryptionData) {
     sga::Reader reader(data, "secret_key");
 
     // Execute
-    auto status = reader.PrepareSize(1);
+    auto status = reader.PrepareSize(1, 0);
 
     // Verify
     ASSERT_EQ(status, sga::Status::kBadOperation);
@@ -81,7 +81,7 @@ TEST(Reader, ShouldReturnSuccessWhenProperlyPreparingData) {
     sga::Reader reader(data, "secret_key");
 
     // Execute
-    auto status = reader.PrepareSize(4);
+    auto status = reader.PrepareSize(4, 0);
 
     // Verify
     ASSERT_EQ(status, sga::Status::kSuccess);
@@ -93,7 +93,7 @@ TEST(Reader, ShouldReturnSuccessWhenPreparingNonEncryptedData) {
     sga::Reader reader(data, "");
 
     // Execute
-    auto status = reader.PrepareSize(1);
+    auto status = reader.PrepareSize(1, 0);
 
     // Verify
     ASSERT_EQ(status, sga::Status::kSuccess);
