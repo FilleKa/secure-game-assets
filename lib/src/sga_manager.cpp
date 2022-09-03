@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 namespace sga {
 
@@ -30,14 +31,17 @@ Status SGAManager::OpenAssetFile(const std::string &asset_file_path,
     return Status::kSuccess;
 }
 
-void SGAManager::ReadFile(const std::string &filename) {
+std::shared_ptr<SGAFile> SGAManager::GetFile(const std::string& filepath) {
 
     Header::Entry entry;
 
-    auto success = header_->GetEntry(entry, filename);
+    std::filesystem::path path(filepath);
+    path.make_preferred();
+
+    auto success = header_->GetEntry(entry, path.make_preferred().string());
 
     if (!success) {
-        return;
+        return nullptr;
     }
 
     Reader reader(asset_file_path_, encryption_key_);
@@ -48,10 +52,11 @@ void SGAManager::ReadFile(const std::string &filename) {
     reader.JumpToPosition(header_size + offset);
     reader.PrepareSize(entry.file_size, entry.index);
 
-    std::string data;
-    reader.ReadString(data, entry.file_size);
+    
+    std::unique_ptr<uint8_t[]> data;
 
-    std::cout << "Data: " << data << std::endl;
+    reader.ReadData(data, entry.file_size);
+    return std::make_shared<SGAFile>(std::move(data), entry.file_size);
 }
 
 } // namespace sga

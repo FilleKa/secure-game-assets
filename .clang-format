@@ -1,1 +1,4 @@
 IndentWidth: 4
+PointerAlignment: Left
+SpaceAfterTemplateKeyword: false
+AlwaysBreakTemplateDeclarations: Yes

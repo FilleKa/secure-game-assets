@@ -53,6 +53,7 @@ class Reader : public FileBase {
     void JumpToPosition(size_t position);
 
     Status ReadString(std::string &result, size_t len);
+    Status ReadData(std::unique_ptr<uint8_t[]>& data, size_t len);
 
   private:
     std::ifstream input_file_stream_;

@@ -6,16 +6,16 @@
 
 namespace sga {
 
-Writer::Writer(const std::string &encryption_key) : FileBase(encryption_key) {}
+Writer::Writer(const std::string& encryption_key) : FileBase(encryption_key) {}
 
-Writer::Writer(const std::string &filename, const std::string &encryption_key)
+Writer::Writer(const std::string& filename, const std::string& encryption_key)
     : FileBase(encryption_key) {
     output_file_stream_.open(filename, std::ios::binary | std::ios::out);
 }
 
 Status Writer::FlushEncryped() {
     if (!IsUsingEncryption()) {
-        return Status::kBadOperation;
+        return Flush();
     }
 
     Crypto::PadData(pending_encrypt_, 32);
@@ -35,7 +35,7 @@ Status Writer::Flush() {
     }
 
     if (output_file_stream_.is_open()) {
-        output_file_stream_.write((const char *)pending_encrypt_.data(),
+        output_file_stream_.write((const char*)pending_encrypt_.data(),
                                   pending_encrypt_.size());
     } else {
         std::copy(pending_encrypt_.begin(), pending_encrypt_.end(),
@@ -50,11 +50,11 @@ std::vector<uint8_t> Writer::GetBuffer() const { return buffer_; }
 
 size_t Writer::GetPosition() { return output_file_stream_.tellp(); }
 
-void Writer::WriteString(const std::string &str) {
+void Writer::WriteString(const std::string& str) {
     std::copy(str.begin(), str.end(), std::back_inserter(pending_encrypt_));
 }
 
-bool Writer::WriteFile(const std::string &path, uint64_t filesize) {
+bool Writer::WriteFile(const std::filesystem::path& path, uint64_t filesize) {
     std::ifstream in_file(path, std::ios::in | std::ios::binary);
 
     if (!in_file.is_open()) {
@@ -63,7 +63,7 @@ bool Writer::WriteFile(const std::string &path, uint64_t filesize) {
 
     auto len = pending_encrypt_.size();
     pending_encrypt_.resize(len + filesize);
-    in_file.read((char *)pending_encrypt_.data() + len, filesize);
+    in_file.read((char*)pending_encrypt_.data() + len, filesize);
     return true;
 }
 

@@ -21,8 +21,8 @@ class Header {
     static constexpr char FORMAT_SIGNATURE[] = "SGAF";
 
     struct Entry {
-        std::string path;
-        std::string packaged_path;
+        std::filesystem::path path;
+        std::filesystem::path packaged_path;
         uint64_t file_size;
         uint64_t offset;
         uint64_t index;

@@ -33,8 +33,8 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
         log::LogInfo(path.string());
 
         Header::Entry header_entry;
-        header_entry.path = entry.path().string();
-        header_entry.packaged_path = path.string();
+        header_entry.path = entry.path();
+        header_entry.packaged_path = path;
 
         entries.push_back(std::move(header_entry));
     }
@@ -51,7 +51,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
         std::ifstream in_file(e.path, std::ios::ate | std::ios::binary);
 
         if (!in_file.is_open()) {
-            log::LogError("Failed to read file " + e.path);
+            log::LogError("Failed to read file " + e.path.string());
             return Status::kBadFile;
         }
 
@@ -65,15 +65,15 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
         }
 
         header_size += 2 * sizeof(uint64_t);
-        header_size += e.packaged_path.size();
+        header_size += e.packaged_path.string().size();
     }
 
     writer.Write<uint64_t>(header_size);
     writer.FlushEncryped();
 
     for (const auto &e : entries) {
-        writer.Write<uint64_t>(e.packaged_path.size());
-        writer.WriteString(e.packaged_path);
+        writer.Write<uint64_t>(e.packaged_path.string().size());
+        writer.WriteString(e.packaged_path.string());
         writer.Write<uint64_t>(e.file_size);
         writer.Write<uint64_t>(e.offset);
     }
@@ -81,7 +81,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
     writer.FlushEncryped();
 
     for (const auto &e : entries) {
-        header.entries_.emplace(e.path, e);
+        header.entries_.emplace(e.path.string(), e);
     }
 
     return Status::kSuccess;
@@ -163,10 +163,12 @@ Status Header::ReadHeader(sga::Reader &reader) {
 
         Entry entry;
         entry.path = filepath;
-        entry.packaged_path = filepath;
+        entry.path.make_preferred();
+        entry.packaged_path = entry.path;
         entry.offset = offset;
         entry.file_size = filesize;
         entry.index = i;
+
         entries_.emplace(filepath, std::move(entry));
     }
 

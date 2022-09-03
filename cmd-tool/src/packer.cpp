@@ -9,9 +9,9 @@
 
 namespace sga {
 
-bool Packer::Pack(const std::string &input_folder,
-                  const std::string &output_file,
-                  const std::string &encryption_key) {
+bool Packer::Pack(const std::string& input_folder,
+                  const std::string& output_file,
+                  const std::string& encryption_key) {
 
     Header header;
 
@@ -20,18 +20,18 @@ bool Packer::Pack(const std::string &input_folder,
 
     std::vector<Header::Entry> sorted_entries;
 
-    const auto &entries = header.GetEntries();
+    const auto& entries = header.GetEntries();
 
-    for (const auto &e : entries) {
+    for (const auto& e : entries) {
         sorted_entries.push_back(e.second);
     }
 
     std::sort(sorted_entries.begin(), sorted_entries.end(),
-              [](const Header::Entry &lhs, const Header::Entry &rhs) {
+              [](const Header::Entry& lhs, const Header::Entry& rhs) {
                   return lhs.offset < rhs.offset;
               });
 
-    for (const auto &e : sorted_entries) {
+    for (const auto& e : sorted_entries) {
         writer.WriteFile(e.path, e.file_size);
         writer.FlushEncryped();
     }
