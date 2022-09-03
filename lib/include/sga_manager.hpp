@@ -5,7 +5,6 @@
 #include "sga_file.hpp"
 #include "status.hpp"
 
-
 #include <memory>
 #include <string>
 

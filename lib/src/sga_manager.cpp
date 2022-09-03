@@ -3,14 +3,14 @@
 
 #include "aes.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <filesystem>
 
 namespace sga {
 
-Status SGAManager::OpenAssetFile(const std::string &asset_file_path,
-                                 const std::string &encryption_key) {
+Status SGAManager::OpenAssetFile(const std::string& asset_file_path,
+                                 const std::string& encryption_key) {
 
     encryption_key_ = encryption_key;
     asset_file_path_ = asset_file_path;
@@ -52,7 +52,6 @@ std::shared_ptr<SGAFile> SGAManager::GetFile(const std::string& filepath) {
     reader.JumpToPosition(header_size + offset);
     reader.PrepareSize(entry.file_size, entry.index);
 
-    
     std::unique_ptr<uint8_t[]> data;
 
     reader.ReadData(data, entry.file_size);

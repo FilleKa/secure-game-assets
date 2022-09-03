@@ -5,9 +5,8 @@
 #include <cstring>
 #include <string>
 
-bool CompareArrays(const std::vector<uint8_t> &lhs,
-                   const std::vector<uint8_t> &rhs,
-                   int count = -1) {
+bool CompareArrays(const std::vector<uint8_t>& lhs,
+                   const std::vector<uint8_t>& rhs, int count = -1) {
     if (count <= 0 && lhs.size() != rhs.size()) {
         return false;
     }

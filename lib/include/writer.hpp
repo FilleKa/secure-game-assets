@@ -8,12 +8,10 @@
 #include <string>
 #include <vector>
 
-
 #include "crypto.hpp"
 #include "endianness.hpp"
 #include "file_base.hpp"
 #include "status.hpp"
-
 
 namespace sga {
 
@@ -27,7 +25,8 @@ class Writer : public FileBase {
 
     std::vector<uint8_t> GetBuffer() const;
 
-    template <typename T> void Write(const T& input) {
+    template<typename T>
+    void Write(const T& input) {
 
         auto data = input;
         endian::ConvertToEndianness(data, endian::Endianness::kLittle);

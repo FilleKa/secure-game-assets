@@ -6,8 +6,8 @@ namespace sga {
 
 constexpr char Header::FORMAT_SIGNATURE[];
 
-Status Header::WriteHeader(Header &header, const std::string &input_folder,
-                           sga::Writer &writer) {
+Status Header::WriteHeader(Header& header, const std::string& input_folder,
+                           sga::Writer& writer) {
 
     std::string stripped_path = input_folder;
     if (stripped_path.back() == '\\' || stripped_path.back() == '/') {
@@ -21,7 +21,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
 
     std::vector<Header::Entry> entries;
 
-    for (const auto &entry :
+    for (const auto& entry :
          std::filesystem::recursive_directory_iterator(input_path)) {
 
         if (!entry.is_regular_file()) {
@@ -47,7 +47,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
 
     uint64_t header_size = 0;
     uint64_t offset = 0;
-    for (auto &e : entries) {
+    for (auto& e : entries) {
         std::ifstream in_file(e.path, std::ios::ate | std::ios::binary);
 
         if (!in_file.is_open()) {
@@ -71,7 +71,7 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
     writer.Write<uint64_t>(header_size);
     writer.FlushEncryped();
 
-    for (const auto &e : entries) {
+    for (const auto& e : entries) {
         writer.Write<uint64_t>(e.packaged_path.string().size());
         writer.WriteString(e.packaged_path.string());
         writer.Write<uint64_t>(e.file_size);
@@ -80,14 +80,14 @@ Status Header::WriteHeader(Header &header, const std::string &input_folder,
 
     writer.FlushEncryped();
 
-    for (const auto &e : entries) {
+    for (const auto& e : entries) {
         header.entries_.emplace(e.path.string(), e);
     }
 
     return Status::kSuccess;
 }
 
-Status Header::ReadHeader(sga::Reader &reader) {
+Status Header::ReadHeader(sga::Reader& reader) {
 
     uint64_t message_count = 0;
     auto status = reader.PrepareSize(4, message_count++);
@@ -158,7 +158,7 @@ Status Header::ReadHeader(sga::Reader &reader) {
         if (status != Status::kSuccess) {
             return status;
         }
-        
+
         std::cout << offset << std::endl;
 
         Entry entry;
@@ -176,7 +176,7 @@ Status Header::ReadHeader(sga::Reader &reader) {
     return Status::kSuccess;
 }
 
-bool Header::GetEntry(Entry &entry, const std::string &filename) {
+bool Header::GetEntry(Entry& entry, const std::string& filename) {
     auto it = entries_.find(filename);
 
     if (it == entries_.end()) {
@@ -187,7 +187,7 @@ bool Header::GetEntry(Entry &entry, const std::string &filename) {
     return true;
 }
 
-const std::map<std::string, Header::Entry> &Header::GetEntries() const {
+const std::map<std::string, Header::Entry>& Header::GetEntries() const {
     return entries_;
 }
 

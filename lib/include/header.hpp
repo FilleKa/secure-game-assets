@@ -15,8 +15,9 @@ class Header {
   public:
     Header() = default;
 
-    static Status WriteHeader(Header& header, const std::string &input_folder, sga::Writer& writer);
-    Status ReadHeader(sga::Reader &reader);
+    static Status WriteHeader(Header& header, const std::string& input_folder,
+                              sga::Writer& writer);
+    Status ReadHeader(sga::Reader& reader);
 
     static constexpr char FORMAT_SIGNATURE[] = "SGAF";
 
@@ -28,7 +29,7 @@ class Header {
         uint64_t index;
     };
 
-    bool GetEntry(Entry &entry, const std::string &filename);
+    bool GetEntry(Entry& entry, const std::string& filename);
 
     const std::map<std::string, Entry>& GetEntries() const;
 

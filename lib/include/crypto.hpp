@@ -10,8 +10,7 @@ namespace sga {
 
 class Crypto {
   public:
-
-    static void PadData(std::vector<uint8_t> &data, int bytes) {
+    static void PadData(std::vector<uint8_t>& data, int bytes) {
         while (data.size() == 0 || (data.size() % bytes) != 0) {
             data.push_back(0);
         }

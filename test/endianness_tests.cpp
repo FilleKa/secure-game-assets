@@ -8,7 +8,7 @@ TEST(Endianness, ShouldProperlyFlipBytes) {
 
     // execute
     auto endianness = sga::endian::Endianness::kLittle;
-    
+
     if (sga::endian::GetLocalEndianness() == sga::endian::Endianness::kLittle) {
         endianness = sga::endian::Endianness::kBig;
     }
@@ -16,5 +16,5 @@ TEST(Endianness, ShouldProperlyFlipBytes) {
     sga::endian::ConvertToEndianness(data, endianness);
 
     // verify
-    ASSERT_EQ(data, 0x0100); // converts to 256 (0x01 00 in big endian) 
+    ASSERT_EQ(data, 0x0100); // converts to 256 (0x01 00 in big endian)
 }

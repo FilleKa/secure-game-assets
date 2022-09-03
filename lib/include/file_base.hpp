@@ -10,12 +10,12 @@ namespace sga {
 
 class FileBase {
   public:
-    FileBase(const std::string &encryption_key);
+    FileBase(const std::string& encryption_key);
 
     bool IsUsingEncryption() const;
 
   protected:
-    const std::vector<uint8_t> &GetPaddedKey() const;
+    const std::vector<uint8_t>& GetPaddedKey() const;
     std::array<uint8_t, 16>
     GetInitializationVector(uint64_t message_index) const;
 

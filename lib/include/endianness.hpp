@@ -12,8 +12,9 @@ enum class Endianness : uint8_t { kBig, kLittle };
 
 Endianness GetLocalEndianness();
 
-template <typename T> void ConvertToEndianness(T &t, Endianness endianness) {
-    if constexpr(sizeof(T) == 1) {
+template<typename T>
+void ConvertToEndianness(T& t, Endianness endianness) {
+    if constexpr (sizeof(T) == 1) {
         return;
     }
 
@@ -24,7 +25,7 @@ template <typename T> void ConvertToEndianness(T &t, Endianness endianness) {
     auto temp = t;
     auto sz = sizeof(T);
     for (size_t i = 0; i < sz; i++) {
-        ((char *)&t)[i] = ((char *)&temp)[sz - (1 + i)];
+        ((char*)&t)[i] = ((char*)&temp)[sz - (1 + i)];
     }
 }
 

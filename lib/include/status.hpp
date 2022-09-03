@@ -4,12 +4,7 @@
 #include <cstdint>
 
 namespace sga {
-    enum class Status : uint8_t {
-        kSuccess,
-        kBadFormat,
-        kBadFile,
-        kBadOperation
-    };
+enum class Status : uint8_t { kSuccess, kBadFormat, kBadFile, kBadOperation };
 }
 
 #endif /* SGA_STATUS_HPP_ */
