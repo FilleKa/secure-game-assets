@@ -31,6 +31,8 @@ bool Packer::Pack(const std::string& input_folder,
                   return lhs.offset < rhs.offset;
               });
 
+
+    writer.SetIVIndex(10);
     for (const auto& e : sorted_entries) {
         writer.WriteFile(e.path, e.file_size);
         writer.FlushEncryped();

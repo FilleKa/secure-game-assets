@@ -40,6 +40,8 @@ class Writer : public FileBase {
 
     void WriteString(const std::string& str);
 
+    void SetIVIndex(size_t iv_index);
+
     bool WriteFile(const std::filesystem::path& path, uint64_t filesize);
 
   private:

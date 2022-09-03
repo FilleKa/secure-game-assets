@@ -167,7 +167,7 @@ Status Header::ReadHeader(sga::Reader& reader) {
         entry.packaged_path = entry.path;
         entry.offset = offset;
         entry.file_size = filesize;
-        entry.index = i;
+        entry.index = 10 + i;
 
         entries_.emplace(filepath, std::move(entry));
     }
@@ -192,5 +192,17 @@ const std::map<std::string, Header::Entry>& Header::GetEntries() const {
 }
 
 size_t Header::GetHeaderSize() const { return header_size_; }
+
+const std::string& Header::GetAssetFilename() const { return asset_filename_; }
+
+void Header::SetAssetFilename(const std::string& filename) {
+    asset_filename_ = filename;
+}
+
+const std::string& Header::GetEncryptionKey() const { return encryption_key_; }
+
+void Header::SetEncryptionKey(const std::string& encryption_key) {
+    encryption_key_ = encryption_key;
+}
 
 } // namespace sga

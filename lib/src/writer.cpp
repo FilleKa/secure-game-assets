@@ -13,6 +13,8 @@ Writer::Writer(const std::string& filename, const std::string& encryption_key)
     output_file_stream_.open(filename, std::ios::binary | std::ios::out);
 }
 
+void Writer::SetIVIndex(size_t iv_index) { flushed_message_count_ = iv_index; }
+
 Status Writer::FlushEncryped() {
     if (!IsUsingEncryption()) {
         return Flush();

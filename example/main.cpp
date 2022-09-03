@@ -7,12 +7,22 @@ int main(int argc, char** argv) {
 
     sga::SGAManager manager;
 
-    manager.OpenAssetFile("example/assets.sga", "secret_key");
+    manager.OpenAssetFile("example/menu_assets.sga", "secret_key");
+    manager.OpenAssetFile("example/game_assets.sga", "secret_key");
+
+    std::cout << "List of all decrypted files:" << std::endl;
+    auto filenames = manager.GetFilenameList();
+    for (const auto& filename : filenames) {
+        std::cout << filename << std::endl;
+    }
 
     // Forward or backwards slashes don't matter..
-    auto file_a = manager.GetFile("Resources\\a.txt");
-    auto file_b = manager.GetFile("Resources/MoreResources\\b.txt");
+    auto file_a = manager.GetFile("game_assets\\a.txt");
+    auto file_b = manager.GetFile("game_assets/subfolder\\b.txt");
 
-    std::cout << "File a: \n" << file_a->GetPointer<char>() << std::endl;
-    std::cout << "File b: \n" << file_b->GetPointer<char>() << std::endl;
+    auto menu_file = manager.GetFile("menu_assets/menu_file.txt");
+
+    std::cout << "game file a: \n" << file_a->GetPointer<char>() << std::endl;
+    std::cout << "game file b: \n" << file_b->GetPointer<char>() << std::endl;
+    std::cout << "menu file: \n" << menu_file->GetPointer<char>() << std::endl;
 }

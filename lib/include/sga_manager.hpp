@@ -17,10 +17,10 @@ class SGAManager {
 
     std::shared_ptr<SGAFile> GetFile(const std::string& filepath);
 
+    std::vector<std::string> GetFilenameList() const;
+
   private:
-    std::unique_ptr<Header> header_;
-    std::string asset_file_path_;
-    std::string encryption_key_;
+    std::vector<std::unique_ptr<Header>> headers_;
 };
 
 } // namespace sga

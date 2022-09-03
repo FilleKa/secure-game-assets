@@ -4,15 +4,16 @@
 
 int main(int argc, char** argv) {
 
-    if (argc != 4) {
+    if (argc != 4 && argc != 3) {
         sga::log::LogError("Bad usage. Please specify: input_folder output_file encryption_key");
+        sga::log::LogError("Or without encryption key: input_folder output_file");
         sga::log::LogInfo("Example usage:\n\t sga-packer.exe Resources/MyGameAssets packed-assets.sga secret_key");
         return -1;
     }
 
     std::string input_folder = argv[1];
     std::string output_file = argv[2];
-    std::string encryption_key = argv[3];
+    std::string encryption_key = argc == 4 ? argv[3] : "";
 
     auto result = sga::Packer::Pack(input_folder, output_file, encryption_key);
 

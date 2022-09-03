@@ -13,8 +13,6 @@ namespace sga {
 
 class Header {
   public:
-    Header() = default;
-
     static Status WriteHeader(Header& header, const std::string& input_folder,
                               sga::Writer& writer);
     Status ReadHeader(sga::Reader& reader);
@@ -35,9 +33,17 @@ class Header {
 
     size_t GetHeaderSize() const;
 
+    const std::string& GetAssetFilename() const;
+    void SetAssetFilename(const std::string& filename);
+
+    const std::string& GetEncryptionKey() const;
+    void SetEncryptionKey(const std::string& encryption_key);
+
   private:
     size_t header_size_;
     std::map<std::string, Entry> entries_;
+    std::string asset_filename_;
+    std::string encryption_key_;
 };
 } // namespace sga
 
