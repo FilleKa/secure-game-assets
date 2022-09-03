@@ -13,7 +13,7 @@ enum class Endianness : uint8_t { kBig, kLittle };
 Endianness GetLocalEndianness();
 
 template <typename T> void ConvertToEndianness(T &t, Endianness endianness) {
-    if (sizeof(T) == 1) {
+    if constexpr(sizeof(T) == 1) {
         return;
     }
 

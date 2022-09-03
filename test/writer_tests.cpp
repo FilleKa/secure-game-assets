@@ -6,8 +6,9 @@
 #include <string>
 
 bool CompareArrays(const std::vector<uint8_t> &lhs,
-                   const std::vector<uint8_t> &rhs) {
-    if (lhs.size() != rhs.size()) {
+                   const std::vector<uint8_t> &rhs,
+                   int count = -1) {
+    if (count <= 0 && lhs.size() != rhs.size()) {
         return false;
     }
 
@@ -15,7 +16,9 @@ bool CompareArrays(const std::vector<uint8_t> &lhs,
         return true;
     }
 
-    return std::memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
+    auto comp_count = count > 0 ? count : lhs.size();
+
+    return std::memcmp(lhs.data(), rhs.data(), comp_count) == 0;
 }
 
 TEST(Writer, ShouldReturnSuccessOnFlush) {
@@ -135,4 +138,17 @@ TEST(Writer, ShouldNotUseEncryptionIfKeyNotProvided) {
 
     // Verify
     ASSERT_FALSE(encrypted);
+}
+
+TEST(Writer, ShouldProperlyEncryptString) {
+    // Setup
+    sga::Writer writer("secret_key");
+    std::vector<uint8_t> expected = {0x0b, 0xb2, 0xbc, 0xd4};
+
+    // Execute
+    writer.WriteString("SGAF");
+    writer.FlushEncryped();
+
+    // Verify
+    ASSERT_TRUE(CompareArrays(writer.GetBuffer(), expected, 4));
 }

@@ -17,7 +17,7 @@ class Crypto {
         }
     }
 
-    static int GetPaddedSize(int size, int bytes) {
+    static size_t GetPaddedSize(size_t size, size_t bytes) {
         if (size == 0) {
             return bytes;
         }

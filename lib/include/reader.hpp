@@ -21,7 +21,7 @@ class Reader : public FileBase {
 
     bool IsFileOpen() const;
 
-    Status PrepareSize(int sizeu, uint64_t message_index);
+    Status PrepareSize(size_t size, uint64_t message_index);
 
     template <typename T> Status Read(T &result) {
         auto len = sizeof(T);
@@ -58,10 +58,10 @@ class Reader : public FileBase {
     std::ifstream input_file_stream_;
 
     std::vector<uint8_t> decrypted_data_;
-    int decrypted_data_cursor_ = 0;
+    size_t decrypted_data_cursor_ = 0;
 
     std::vector<uint8_t> data_buffer_;
-    int data_buffer_cursor_ = 0;
+    size_t data_buffer_cursor_ = 0;
 };
 
 } // namespace sga
