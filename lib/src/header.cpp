@@ -1,6 +1,5 @@
 #include "header.hpp"
 #include "log.hpp"
-#include <iostream>
 
 namespace sga {
 
@@ -123,9 +122,6 @@ Status Header::ReadHeader(sga::Reader& reader) {
         return status;
     }
 
-    std::cout << "Found " << entry_count << " entries. " << header_size
-              << " bytes of data." << std::endl;
-
     reader.PrepareSize(header_size, message_count++);
 
     for (uint64_t i = 0; i < entry_count; i++) {
@@ -137,16 +133,12 @@ Status Header::ReadHeader(sga::Reader& reader) {
             return status;
         }
 
-        std::cout << "len:" << filename_len << std::endl;
-
         std::string filepath;
         status = reader.ReadString(filepath, filename_len);
 
         if (status != Status::kSuccess) {
             return status;
         }
-
-        std::cout << filepath << std::endl;
 
         uint64_t filesize;
         status = reader.Read(filesize);
@@ -155,15 +147,12 @@ Status Header::ReadHeader(sga::Reader& reader) {
             return status;
         }
 
-        std::cout << filesize << std::endl;
         uint64_t offset;
         status = reader.Read(offset);
 
         if (status != Status::kSuccess) {
             return status;
         }
-
-        std::cout << offset << std::endl;
 
         Entry entry;
         entry.path = filepath;
