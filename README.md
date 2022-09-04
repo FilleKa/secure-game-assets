@@ -36,8 +36,8 @@ sga-packer.exe Resources/MyGameAssets assets.sga secret_key
 
 int main(int argc, char** argv)  {
 	sga::SGAManager manager;
-	manager.OpenAssetFile("example/menu_assets.sga", "secret_key");
-	auto file_a = manager.GetFile("game_assets/level_1.json");
+	manager.OpenAssetFile("example/game_assets.sga", "secret_key");
+	auto file_a = manager.GetFile("levels/level_1.json");
 	// *file_a* can now provide pointer to data & file size.
 }
 ```
