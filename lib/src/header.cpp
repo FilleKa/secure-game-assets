@@ -71,9 +71,13 @@ Status Header::WriteHeader(Header& header, const std::string& input_folder,
     writer.Write<uint64_t>(header_size);
     writer.FlushEncryped();
 
-    for (const auto& e : entries) {
+    for (auto& e : entries) {
         writer.Write<uint64_t>(e.packaged_path.string().size());
-        writer.WriteString(e.packaged_path.string());
+    
+        auto nice_path = e.packaged_path.make_preferred().string();
+        std::replace(nice_path.begin(), nice_path.end(), '\\', '/');
+
+        writer.WriteString(nice_path);
         writer.Write<uint64_t>(e.file_size);
         writer.Write<uint64_t>(e.offset);
     }

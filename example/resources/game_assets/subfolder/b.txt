@@ -1,2 +1,1 @@
-Yet another example of a 
-dummy data file.. 
+Yet another example of a dummy data file..
