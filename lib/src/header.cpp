@@ -72,7 +72,7 @@ Status Header::WriteHeader(Header& header, const std::string& input_folder,
 
     for (auto& e : entries) {
         writer.Write<uint64_t>(e.packaged_path.string().size());
-    
+
         auto nice_path = e.packaged_path.make_preferred().string();
         std::replace(nice_path.begin(), nice_path.end(), '\\', '/');
 
@@ -169,7 +169,7 @@ Status Header::ReadHeader(sga::Reader& reader) {
     return Status::kSuccess;
 }
 
-bool Header::GetEntry(Entry& entry, const std::string& filename) {
+bool Header::GetEntry(Entry& entry, const std::string& filename) const {
     auto it = entries_.find(filename);
 
     if (it == entries_.end()) {

@@ -7,8 +7,8 @@ int main(int argc, char** argv) {
 
     sga::SGAManager manager;
 
-    manager.OpenAssetFile("example/menu_assets.sga", "secret_key");
-    manager.OpenAssetFile("example/game_assets.sga", "secret_key");
+    manager.OpenAssetContainer("example/menu_assets.sga", "secret_key", false);
+    manager.OpenAssetContainer("example/game_assets.sga", "secret_key", true);
 
     std::cout << "List of all decrypted files:" << std::endl;
     auto filenames = manager.GetFilenameList();

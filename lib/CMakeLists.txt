@@ -3,6 +3,7 @@ add_library(sga
     src/header.cpp
     src/log.cpp
     src/reader.cpp
+    src/sga_container.cpp 
     src/sga_file.cpp
     src/sga_manager.cpp 
     src/writer.cpp

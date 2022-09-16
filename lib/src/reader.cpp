@@ -4,8 +4,8 @@
 
 namespace sga {
 
-Reader::Reader(std::vector<uint8_t> data, const std::string& encryption_key)
-    : FileBase(encryption_key), data_buffer_(data) {}
+Reader::Reader(std::vector<uint8_t>&& data, const std::string& encryption_key)
+    : FileBase(encryption_key), data_buffer_(std::move(data)) {}
 
 Reader::Reader(const std::string& asset_file_path,
                const std::string& encryption_key)
@@ -34,6 +34,7 @@ Status Reader::PrepareSize(size_t size, uint64_t message_index) {
 
         std::memcpy(decrypted_data_.data(),
                     data_buffer_.data() + data_buffer_cursor_, sz);
+        data_buffer_cursor_ += sz;
     }
 
     AES_ctx ctx;

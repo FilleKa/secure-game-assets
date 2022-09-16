@@ -18,7 +18,7 @@ class Reader : public FileBase {
     Reader(const std::string& asset_file_path,
            const std::string& encryption_key);
 
-    Reader(std::vector<uint8_t> data, const std::string& encryption_key);
+    Reader(std::vector<uint8_t>&& data, const std::string& encryption_key);
 
     bool IsFileOpen() const;
 

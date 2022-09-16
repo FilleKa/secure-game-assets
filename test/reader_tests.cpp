@@ -8,7 +8,7 @@
 TEST(Reader, ShouldProperlyReadString) {
     // Setup
     std::vector<uint8_t> data = {'A', 'B', 'C'};
-    sga::Reader reader(data, "");
+    sga::Reader reader(std::move(data), "");
 
     // Execute
     std::string str;
@@ -22,7 +22,7 @@ TEST(Reader, ShouldProperlyReadString) {
 TEST(Reader, ShouldProperlyReadNumber) {
     // Setup
     std::vector<uint8_t> data = {0x01, 0x01, 0x00, 0x00};
-    sga::Reader reader(data, "");
+    sga::Reader reader(std::move(data), "");
 
     // Execute
     uint32_t num;
@@ -37,7 +37,7 @@ TEST(Reader, ShouldProperlyMultipleData) {
     // Setup
     std::vector<uint8_t> data = {'A',  'B',  'C', 0x01, 0x23,
                                  0x45, 0x67, 'X', 'Y'};
-    sga::Reader reader(data, "");
+    sga::Reader reader(std::move(data), "");
 
     // Execute
     std::string str_abc;
@@ -62,7 +62,7 @@ TEST(Reader, ShouldProperlyMultipleData) {
 TEST(Reader, ShouldReturnBadOperationOnPreparingEmptyEncryptionData) {
     // Setup
     std::vector<uint8_t> data;
-    sga::Reader reader(data, "secret_key");
+    sga::Reader reader(std::move(data), "secret_key");
 
     // Execute
     auto status = reader.PrepareSize(1, 0);
@@ -78,7 +78,7 @@ TEST(Reader, ShouldReturnSuccessWhenProperlyPreparingData) {
         data.push_back(i);
     }
 
-    sga::Reader reader(data, "secret_key");
+    sga::Reader reader(std::move(data), "secret_key");
 
     // Execute
     auto status = reader.PrepareSize(4, 0);
@@ -90,7 +90,7 @@ TEST(Reader, ShouldReturnSuccessWhenProperlyPreparingData) {
 TEST(Reader, ShouldReturnSuccessWhenPreparingNonEncryptedData) {
     // Setup
     std::vector<uint8_t> data;
-    sga::Reader reader(data, "");
+    sga::Reader reader(std::move(data), "");
 
     // Execute
     auto status = reader.PrepareSize(1, 0);

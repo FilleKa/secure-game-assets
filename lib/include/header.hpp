@@ -27,7 +27,7 @@ class Header {
         uint64_t index;
     };
 
-    bool GetEntry(Entry& entry, const std::string& filename);
+    bool GetEntry(Entry& entry, const std::string& filename) const;
 
     const std::map<std::string, Entry>& GetEntries() const;
 
