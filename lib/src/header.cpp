@@ -8,6 +8,8 @@ constexpr char Header::FORMAT_SIGNATURE[];
 Status Header::WriteHeader(Header& header, const std::string& input_folder,
                            sga::Writer& writer) {
 
+    size_t flushed_bytes = 0;
+
     std::string stripped_path = input_folder;
     if (stripped_path.back() == '\\' || stripped_path.back() == '/') {
         stripped_path.pop_back();
@@ -39,10 +41,10 @@ Status Header::WriteHeader(Header& header, const std::string& input_folder,
     }
 
     writer.WriteString(FORMAT_SIGNATURE);
-    writer.FlushEncryped();
+    writer.FlushEncryped(flushed_bytes);
 
     writer.Write<uint64_t>(entries.size());
-    writer.FlushEncryped();
+    writer.FlushEncryped(flushed_bytes);
 
     uint64_t header_size = 0;
     uint64_t offset = 0;
@@ -62,26 +64,29 @@ Status Header::WriteHeader(Header& header, const std::string& input_folder,
         } else {
             offset += e.file_size;
         }
+        
+        auto nice_path = e.packaged_path.make_preferred().string();
+        std::replace(nice_path.begin(), nice_path.end(), '\\', '/');
 
-        header_size += 2 * sizeof(uint64_t);
-        header_size += e.packaged_path.string().size();
+        header_size += nice_path.size();
+        header_size += 3 * sizeof(uint64_t);
     }
 
     writer.Write<uint64_t>(header_size);
-    writer.FlushEncryped();
+    writer.FlushEncryped(flushed_bytes);
 
     for (auto& e : entries) {
-        writer.Write<uint64_t>(e.packaged_path.string().size());
 
         auto nice_path = e.packaged_path.make_preferred().string();
         std::replace(nice_path.begin(), nice_path.end(), '\\', '/');
 
+        writer.Write<uint64_t>(nice_path.size());
         writer.WriteString(nice_path);
         writer.Write<uint64_t>(e.file_size);
         writer.Write<uint64_t>(e.offset);
     }
 
-    writer.FlushEncryped();
+    writer.FlushEncryped(flushed_bytes);
 
     for (const auto& e : entries) {
         header.entries_.emplace(e.path.string(), e);
@@ -94,6 +99,10 @@ Status Header::ReadHeader(sga::Reader& reader) {
 
     uint64_t message_count = 0;
     auto status = reader.PrepareSize(4, message_count++);
+    
+    if (status != Status::kSuccess) {
+        return status;
+    }
 
     std::string signature;
     status = reader.ReadString(signature, 4);

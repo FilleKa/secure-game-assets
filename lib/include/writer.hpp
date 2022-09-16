@@ -20,7 +20,7 @@ class Writer : public FileBase {
     Writer(const std::string& encryption_key);
     Writer(const std::string& filename, const std::string& encryption_key);
 
-    Status FlushEncryped();
+    Status FlushEncryped(size_t& flushed_bytes);
     Status Flush();
 
     std::vector<uint8_t> GetBuffer() const;

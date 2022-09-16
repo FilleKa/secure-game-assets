@@ -15,13 +15,13 @@ Writer::Writer(const std::string& filename, const std::string& encryption_key)
 
 void Writer::SetIVIndex(size_t iv_index) { flushed_message_count_ = iv_index; }
 
-Status Writer::FlushEncryped() {
+Status Writer::FlushEncryped(size_t& flushed_bytes) {
     if (!IsUsingEncryption()) {
         return Flush();
     }
 
     Crypto::PadData(pending_encrypt_, 32);
-
+    flushed_bytes = pending_encrypt_.size();
     AES_ctx ctx;
     AES_init_ctx_iv(&ctx, GetPaddedKey().data(),
                     GetInitializationVector(flushed_message_count_++).data());

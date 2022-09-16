@@ -38,7 +38,8 @@ TEST(Writer, ShouldReturnSuccessOnFlushEncrypted) {
 
     // Execute
     writer.WriteString("Testing");
-    auto result = writer.FlushEncryped();
+    size_t flushed_count = 0;
+    auto result = writer.FlushEncryped(flushed_count);
 
     // Verify
     ASSERT_EQ(result, sga::Status::kSuccess);
@@ -60,7 +61,8 @@ TEST(Writer, ShouldReturnBadOperationOnFlushEncryptedWithNoKey) {
     sga::Writer writer("");
 
     // Execute
-    auto result = writer.FlushEncryped();
+    size_t flushed_count = 0;
+    auto result = writer.FlushEncryped(flushed_count);
 
     // Verify
     ASSERT_EQ(result, sga::Status::kBadOperation);
@@ -146,7 +148,8 @@ TEST(Writer, ShouldProperlyEncryptString) {
 
     // Execute
     writer.WriteString("SGAF");
-    writer.FlushEncryped();
+    size_t flushed_count = 0;
+    auto result = writer.FlushEncryped(flushed_count);
 
     // Verify
     ASSERT_TRUE(CompareArrays(writer.GetBuffer(), expected, 4));

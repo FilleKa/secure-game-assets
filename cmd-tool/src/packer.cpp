@@ -33,9 +33,10 @@ bool Packer::Pack(const std::string& input_folder,
 
 
     writer.SetIVIndex(10);
+    size_t flushed_bytes = 0;
     for (const auto& e : sorted_entries) {
         writer.WriteFile(e.path, e.file_size);
-        writer.FlushEncryped();
+        writer.FlushEncryped(flushed_bytes);
     }
 
     return true;

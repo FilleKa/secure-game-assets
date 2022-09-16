@@ -36,13 +36,13 @@ SGAContainer::SGAContainer(const std::string& asset_file_path,
 
     auto status = header_.ReadHeader(*reader_.get());
 
-    header_.SetAssetFilename(asset_file_path);
-    header_.SetEncryptionKey(encryption_key);
-
     if (status != Status::kSuccess) {
         status_ = status;
         return;
     }
+    
+    header_.SetAssetFilename(asset_file_path);
+    header_.SetEncryptionKey(encryption_key);
 }
 
 Status SGAContainer::GetStatus() const { return status_; }
