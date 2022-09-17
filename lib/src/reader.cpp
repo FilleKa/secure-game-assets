@@ -45,10 +45,20 @@ Status Reader::PrepareSize(size_t size, uint64_t message_index) {
     return Status::kSuccess;
 }
 
-size_t Reader::GetPosition() { return input_file_stream_.tellg(); }
+size_t Reader::GetPosition() { 
+    if (input_file_stream_.is_open()) {
+        return input_file_stream_.tellg();
+    } else {
+        return data_buffer_cursor_;
+    }
+}
 
 void Reader::JumpToPosition(size_t position) {
-    input_file_stream_.seekg(position);
+    if (input_file_stream_.is_open()) {
+        input_file_stream_.seekg(position);
+    } else {
+        data_buffer_cursor_ = position;
+    } 
 }
 
 Status Reader::ReadString(std::string& result, size_t len) {
@@ -77,11 +87,8 @@ Status Reader::ReadString(std::string& result, size_t len) {
 }
 
 Status Reader::ReadData(std::unique_ptr<uint8_t[]>& data, size_t len) {
-    data = std::make_unique<uint8_t[]>(len + 1);
-
-    // makes it easier to print data for debug purposes..
-    data.get()[len] = '\0';
-
+    data = std::make_unique<uint8_t[]>(len);
+    
     if (IsUsingEncryption()) {
         std::memcpy((char*)data.get(),
                     decrypted_data_.data() + decrypted_data_cursor_, len);
