@@ -137,19 +137,13 @@ Status Header::ReadHeader(sga::Reader& reader) {
 
         uint64_t filename_len;
         status = reader.Read(filename_len);
-
-        if (filename_len > 50000000) {
-            return Status::kBadFile;
-        }
-
+        
         if (status != Status::kSuccess) {
             return status;
         }
 
-
         std::string filepath;
         status = reader.ReadString(filepath, filename_len);
-        std::cout << "Read file: " << filepath << std::endl;
 
         if (status != Status::kSuccess) {
             return status;
