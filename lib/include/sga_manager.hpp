@@ -21,7 +21,6 @@ class SGAManager {
 
     std::vector<std::string> GetFilenameList() const;
 
-  private:
     std::vector<std::unique_ptr<SGAContainer>> containers_;
 };
 

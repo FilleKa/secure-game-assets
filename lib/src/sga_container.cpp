@@ -23,10 +23,13 @@ SGAContainer::SGAContainer(const std::string& asset_file_path,
         auto file_size = input_file_stream.tellg();
         input_file_stream.seekg(0);
 
-        std::vector<uint8_t> file_contents;
+        /*std::vector<uint8_t> file_contents;
         file_contents.reserve(file_size);
         file_contents.assign(std::istreambuf_iterator<char>(input_file_stream),
-                             std::istreambuf_iterator<char>());
+                             std::istreambuf_iterator<char>());*/
+
+		std::vector<uint8_t> file_contents(file_size);
+		input_file_stream.read((char*) file_contents.data(), file_size);
 
         reader_ =
             std::make_unique<Reader>(std::move(file_contents), encryption_key);
